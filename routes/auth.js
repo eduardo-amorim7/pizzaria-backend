@@ -7,20 +7,12 @@ const router = express.Router();
 
 // @route   POST /api/auth/register
 // @desc    Registrar novo usuário
-// @access  Private (apenas admin/gerente)
-router.post('/register', auth, async (req, res) => {
+// @access  Public (inicialmente, depois pode ser restrito por lógica interna)
+router.post("/register", async (req, res) => {
   try {
     const { nome, email, senha, nivel_acesso } = req.body;
 
-    // Verificar se usuário tem permissão para criar usuários
-    if (!req.usuario.temPermissao('gerenciar_usuarios')) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Sem permissão para criar usuários' 
-      });
-    }
-
-    // Verificar se usuário já existe
+    // Criar novo usuário
     const usuarioExistente = await Usuario.findOne({ email });
     if (usuarioExistente) {
       return res.status(400).json({ 
